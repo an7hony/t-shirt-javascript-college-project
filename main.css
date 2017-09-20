@@ -1,0 +1,91 @@
+.imageT
+{
+ 
+    position: absolute;
+    display: block;
+    margin-left: auto;
+    margin-right: auto
+    
+}
+.imageContainer
+{
+position: relative;
+width: 600px;
+height: 600px;
+border: 2px solid #000;
+margin-left: auto;
+margin-right: auto;
+background:url("clangeBack.jpg");
+}
+
+.fnamey:valid{
+
+background-color: red;
+
+
+
+}
+
+.fnamey:invalid{
+
+background-color: yellow;
+
+
+
+}
+
+.bannerMain
+{
+position: relative;
+width: 600px;
+height: 170px;
+border: 2px solid #000;
+margin-left: auto;
+margin-right: auto;
+background:url("banner.png");
+}
+.radioBsize
+{
+margin-top:30px;
+
+}
+
+.radioBlogo
+{
+margin-top:30px;
+
+}
+
+.userOptions{
+
+
+ background-color: #00ff00;
+	width: 600px;
+height: 600px;
+border: 2px solid #000;
+margin-left: auto;
+margin-right: auto;
+}
+.price{
+
+
+margin-bottom: 32px;
+
+
+
+font-size: 30px;
+
+
+}
+
+.emailType{
+
+
+margin-bottom: 32px;
+
+
+
+font-size: 12px;
+
+
+}

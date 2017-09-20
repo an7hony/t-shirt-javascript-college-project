@@ -1,0 +1,923 @@
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script>
+
+    //Project: Part B
+    //Student id: R00111233
+    //name: Anthony Pisani
+    //Email: anthony.pisani@mycit.ie
+    //website:www.an7hony.com
+
+
+
+    
+//these are the public variables for the logo images and the tshirt images//
+      var img1,img2,img3,img4,img5,img6,img7,img8;
+      var logo1,logo2,logo3,logo4,logo5,logo16,logo7,logo8;
+    
+
+//these are the public variables for the price system, when the function updateprice in run it will get these and
+//update them.
+      var totalPrice = 0;
+      var sizePrice = 0;
+      var tshirtPrice = 20;
+      var colourPrice=0;
+      var logoprice=7;
+      var discountPrice=0;
+
+  //the public booleans for the validation they are set to false, when an user enters eg: a right ppsn the pps will turn to true same for the other ones.
+  var peselCheckBool = false;
+  var creditCheckBool = false;
+  var ppsCheckBool=false;
+  var banknumBool=false;
+  var emailCheckBool=false;
+
+//These are the public variables to send to the php server to tell what tshirt /colour/logo is selected
+  var selectedTScolour="none";
+  var selectedTSsize="none";
+  var selectedLogo="none";
+
+//the public tshirt sizes in pixels, these can be changed and the tshirt will stay in the center because of the calculation: Div size / 2 -  (smallsize or largesize or bigsize)/2;
+  var smallsize = '300px';
+  var largesize = '400px';
+  var bigsize = '500px';
+
+//these variables are calling the textbox so i can change the style colour or even get the text.
+  var ppsBox;
+  var emailBox;
+  var peselBox;
+  var creditcardBox;
+  var bankNum;
+
+
+
+  //Function name (OnStart)
+  //Description: The onstart function is loaded on the body in html this happens when the page starts, the cookies are loaded here.
+  //i also set the checksum boxes to red because there is nothing enterd.
+  //the logos and images are initialized and the hideall tshirts and hideall logos methods are run to hide them.
+  // finally the default tshirt is set to blue with the shotTshit function and the size to 1 with the setSize function;
+  function onStart(){
+    var emailtext=document.getElementById('emailType');
+      emailtext.innerHTML="Email Type:";
+   ppsBox = document.getElementById("ppsN");
+   ppsBox.style.backgroundColor = "#FF6666";
+
+   emailBox = document.getElementById("emailBox");
+   emailBox.style.backgroundColor = "#FF6666";
+
+   peselBox = document.getElementById("pesel");
+   peselBox.style.backgroundColor = "#FF6666";
+
+   creditcardBox = document.getElementById("creditC");
+   creditcardBox.style.backgroundColor = "#FF6666";
+
+   bankNum = document.getElementById("bankNo");
+   bankNum.style.backgroundColor = "#FF6666";
+
+if(document.cookie.length!=0){
+
+var nameCookieArry= document.cookie.split("=");
+
+
+ document.getElementById('fnamey').value = nameCookieArry[1];
+
+alert("First name cookie:"+nameCookieArry[1]+" Cookie loaded into name text box");
+
+}
+  
+
+   logo1 = document.getElementById('logo1');
+   logo2 = document.getElementById('logo2');
+   logo3 = document.getElementById('logo3');
+   logo4 = document.getElementById('logo4');
+   logo5 = document.getElementById('logo5');
+   logo6 = document.getElementById('logo6');
+   logo7 = document.getElementById('logo7');
+   logo8 = document.getElementById('logo8');
+   img1 = document.getElementById('tBlue');
+   img2 = document.getElementById('tRed');
+   img3 = document.getElementById('tGreen');
+   img4 = document.getElementById('tYellow');
+   img5 = document.getElementById('tLightB');
+   img6 = document.getElementById('tOrange');
+   img7 = document.getElementById('tGold');
+   img8 = document.getElementById('tMoneyc');
+
+   hideAll();
+   hideAllLogo();
+   showTshirt('blue');
+
+   setSize('l');
+   setlogo(1);
+
+
+
+
+  }
+
+  //Function name (checkAll)
+  //Description: the Check all function is run on the submit form button/form, what happens is that it checks if the local bools are all set to true
+  // these bools are to check if the user has enterd the right creditcard/pps/email/banknum/pesel,
+  // if even one bool is false it will not submit the form and will alert the error message, if everything is fine it will submit the form to the php server .
+
+  function checkAll(){
+   var nameF = document.getElementById("fnamey").value;
+    var nameS = document.getElementById("snamey").value;
+    if(peselCheckBool==true && banknumBool==true &&creditCheckBool==true && ppsCheckBool==true && emailCheckBool==true){
+       
+      document.cookie = "firstname="+nameF.toString()+";";
+      
+      return true;
+
+    }else{
+      alert("Cant send an Incomplete Form! fill in red textbox!");
+      return false;
+    }
+
+
+
+  }
+
+  //Function name (EmailCheck(email))
+  //Description: the Email Check function has one parameter called "email" this is the users inputed email, the function is run on the textbox onchange event, this is so i can checkevery time a user enters something
+  // or removes something(letter/number/charecters).
+  //what happens first is that i get the emailbox content so the value from the textbox and i check if the @ simbol is not at the index 0 1 2 of the variable, so if i enter"o@" its an invalid email but if i enter
+  //"anthony@" it is valid, if the email is right or wrong we set the bool to true of false, the second if statement is to check if the email address is a cit email if it is we apply a discound and display it.
+  function emailCheck(email){
+    var emailBox = document.getElementById("emailBox");
+    var citemail = email.search("mycit.ie"); 
+
+
+ var emailtext=document.getElementById('emailType');
+    
+    if(email.indexOf("@")<2){
+
+      emailBox.style.backgroundColor = "#FF6666";
+      emailCheckBool=false;
+
+
+    }else{
+
+      emailBox.style.backgroundColor = "#3333FF";
+
+      emailCheckBool=true;
+
+    }
+
+    if(citemail!=-1){
+
+      emailtext.innerHTML="Email Type: cit email 10%discount!";
+
+discountPrice=10;
+updateTotalprice();
+     
+
+    }else{
+
+
+      emailtext.innerHTML="Email Type: not cit email";
+discountPrice=0;
+updateTotalprice();
+    }
+
+  }
+
+  //Function name (calcPesel(peselNum))
+  //Description: this function calculates the pesel number and will set the bool to true if its right and false if its not.
+  //the first thing that happens is that it will loop trough the whole enterd pesel number and multiply the digits from the calnums and the enterd number eg:
+  // the first calculation: 1*(first digit of enterd number), it will then store the result in result 1, and keep adding these undill the loop ends, after the loop is ended it will mod the result to 10 
+  // if the result is 0 its correct pesel number and set the boolean the true and style the colour of text box, if it is false it will set bool to false and set it to red.
+  function calcPesel(peselNum){
+
+
+    var calNums="13791379131";
+    var result1=0;
+
+    for(var i = 0;i<peselNum.length;i++)
+    {
+
+
+      var temp1 = parseInt(peselNum.charAt(i));
+      var temp2 = parseInt(calNums.charAt(i));
+
+      result1+=temp1*temp2;
+
+    }
+
+
+    var result2 = result1 % 10;
+
+
+
+
+    var peselBox = document.getElementById("pesel");
+
+    if(peselNum.length==0){
+      peselBox.style.backgroundColor = "#FF6666";
+      peselCheckBool=false;
+
+    }else{
+
+      if(result2==0)
+      {
+
+
+
+        peselBox.style.backgroundColor = "#3333FF";
+        peselCheckBool=true;
+
+
+      }else if(result2!=0){
+
+        peselBox.style.backgroundColor = "#FF6666";
+        peselCheckBool=false;
+      }
+
+
+    }
+
+  }
+  function calcEuro(numEuro){
+
+    var num="X04135981862";
+    var totalnum=0;
+
+
+
+    var res = numEuro.slice( 0, 1 );
+
+    var res1 = numEuro.slice( 1, 12);
+
+
+    var alp = "ABCDEFGHIGKLOMNOPQRSTUVWXYZ";
+    var alpPos = alp.indexOf(res);
+
+    totalnum=+alpPos;
+    for(var i = 0;i<11;i++){
+      totalnum+=parseInt(res1.charAt(i));
+
+    }
+
+    for(var i = 0;i<totalnum.length;i++){
+      totalnum+=parseInt(res1.charAt(i));
+
+    }
+
+    var mod = totalnum %9;
+
+    if(mod==8){
+
+      bankNum.style.backgroundColor = "#3333FF";
+      banknumBool=true;
+
+    }else{
+      banknumBool=false;
+      bankNum.style.backgroundColor = "#FF6666";
+
+
+    }
+
+
+
+  }
+
+//Function name: ppsCalc(ppsnum)
+//Description: this function will calculate the pps number.
+
+  function ppsCalc(ppsNum){
+
+  //var pps="3033724G";
+  var calc="8765432"
+  var totalNum=0;
+
+  var alp="WABCDEFGHIJKLMNOPQRSTUV";
+
+  var letter = ppsNum.charAt(7);
+  //alert(letter);
+  var letterpos = alp.indexOf(letter.toUpperCase());
+
+  //totalNum+=letterpos;
+
+  for(var i = 0; i<7;i++){
+
+
+    var temp1 = parseInt(ppsNum.charAt(i));
+
+    var temp2=parseInt(calc.charAt(i))
+
+    totalNum+= temp1*temp2; 
+
+  //alert(temp1+"x"+temp2+"="+totalNum);
+
+  }
+
+
+  ppsBox = document.getElementById("ppsN");
+  totalNum=totalNum % 23;
+  //alert(totalNum);
+
+  if(totalNum==letterpos){
+
+  //alert("right"+letterpos+" "+totalNum);
+  ppsBox.style.backgroundColor = "#3333FF";
+  ppsCheckBool=true;
+
+  }else{
+
+
+  //alert("error"+letterpos+" "+totalNum);
+  ppsBox.style.backgroundColor = "#FF6666";
+  ppsCheckBool=false;
+
+  }
+
+
+
+  }
+  //Function name: creditCalc
+  //Description: this function calculates the creditcard
+  function creditCalc(cnum){
+  
+
+  
+  var total = 0;
+  
+
+
+  for(var i = 14; i>-1;i -=2){
+
+ 
+
+  var t = parseInt(cnum.charAt(i)* 2);
+
+
+
+
+  if(t>9){
+
+   t = t.toString();
+   var num1 = t.slice(0,1);
+   var num2 = t.slice(1,2);
+
+   var num1int =  parseInt(num1);
+   var num2int =  parseInt(num2);
+
+  //alert(num1int+"[split"+t+"]"+num2int);
+
+  total+=num1int+num2int;
+
+  }else{
+
+    total+=t;
+
+  //alert(total);
+
+  }
+
+  }
+
+  for(var i = 15; i>-1;i -=2){
+
+    var result = parseInt(cnum.charAt(i));
+
+    total+=result;
+
+
+
+  }
+  var cardBox = document.getElementById("creditC");
+
+
+  var total= total % 10;
+
+
+  if(total==0){
+    cardBox.style.backgroundColor = "#3333FF";
+    creditCheckBool=true;
+
+  }else{
+
+    cardBox.style.backgroundColor = "#FF6666";
+    creditCheckBool=false;
+
+  }
+  //alert(total);
+
+
+  }
+
+  //Function name: showTshirt(TColour)
+  //Description: the show tshirt function is the main function that controls the changeing elements of the tshirt colour view, the first thing that happens it hides all the other tshirts for a fresh load,
+  //the parameter TColour is the select box in html this will send what selection is active and the if statement will check what color tshirt is selected and change it to the corisponding tshirt.
+  //when an if statement is true it will also set the price of that colour and run the updateTotalPrice function .
+  function showTshirt(TColour) {
+
+    hideAll();
+    if(TColour=="blue"){
+
+      img1.style.visibility = 'visible';
+      colourPrice=2;
+      selectedTScolour="blue";
+      updateTotalprice();
+    }else if(TColour=="red"){
+      img2.style.visibility = 'visible';
+      colourPrice=2;
+      selectedTScolour="red";
+      updateTotalprice();
+    }else if(TColour=="green"){
+      img3.style.visibility = 'visible';
+      colourPrice=2;
+      updateTotalprice();
+      selectedTScolour="green";
+    }else if(TColour=="yellow"){
+
+      img4.style.visibility = 'visible';
+      colourPrice=2;
+      updateTotalprice();
+      selectedTScolour="yellow";
+    }else if(TColour=="lightb"){
+      img5.style.visibility = 'visible';
+      colourPrice=2;
+      updateTotalprice();
+      selectedTScolour="LightBlue";
+    }else if(TColour=="orange"){
+      img6.style.visibility = 'visible';
+      colourPrice=3;
+      updateTotalprice();
+      selectedTScolour="orange";
+    }
+    else if(TColour=="gold"){
+      img7.style.visibility = 'visible';
+      colourPrice=23;
+      selectedTScolour="gold";
+      updateTotalprice();
+    }
+    else if(TColour=="moneyc"){
+      img8.style.visibility = 'visible';
+      colourPrice=23;
+      selectedTScolour="moneyPatern";
+      updateTotalprice();
+    }
+    
+    
+  }
+
+  //Function name:setLogo(logo)
+  //Description:the set logo function controlls what logo to show, it gets the selected logo from the html trought the logo parameter and then the if statements look what value is selected and sets that logo to
+  //visible, before the if statements all the logos are hided with the hideAllLogo function.
+  function setlogo(logo){
+    hideAllLogo();
+
+
+    if(logo==1){
+      logo1.style.visibility = 'visible';
+    logoprice=1;
+    updateTotalprice();
+
+    }else if(logo==2){
+
+      logo2.style.visibility = 'visible';
+logoprice=2;
+    updateTotalprice();
+
+    }else if(logo==3){
+
+
+
+      logo3.style.visibility = 'visible';
+      logoprice=3;
+    updateTotalprice();
+    }
+    else if(logo==4){
+
+
+
+      logo4.style.visibility = 'visible';
+      logoprice=4;
+    updateTotalprice();
+    }
+    else if(logo==5){
+
+
+
+      logo5.style.visibility = 'visible';
+      logoprice=5;
+    updateTotalprice();
+    }
+
+    else if(logo==6){
+
+
+
+      logo6.style.visibility = 'visible';
+      logoprice=6;
+    updateTotalprice();
+    }
+    else if(logo==7){
+
+
+
+      logo7.style.visibility = 'visible';
+      logoprice=7;
+    updateTotalprice();
+    }
+    else if(logo==8){
+
+
+
+      logo8.style.visibility = 'visible';
+      logoprice=8;
+    updateTotalprice();
+    }
+
+
+
+  }
+
+  //Function name:setSize(sizey)
+  //Description: the set size function is what controls the tshity size the parameter sizey is the select box from html and will let javascript know what size is selected.
+  //when a size is selected it will run the if statement and set all of the logos and tshirts in the page to the size eg: smallsize/medium/large.
+  // the var pix will center the images if this calulation was not in place the logo would have resized but the position would be to the top left corner of the div,with this simple calculation "600 / 2 - parseInt(smallsize)/2" it centers it to the div and
+  //looks alot better.
+  //it also  updates the total price of the size .
+  function setSize(sizey){
+
+    if(sizey=="s"){
+     img1.style.height = smallsize;
+     img1.style.width = smallsize;
+     img2.style.height = smallsize;
+     img2.style.width = smallsize;
+     img3.style.height = smallsize;
+     img3.style.width = smallsize;
+     img4.style.height = smallsize;
+     img4.style.width = smallsize;
+     img5.style.height = smallsize;
+     img5.style.width = smallsize;
+     img6.style.height = smallsize;
+     img6.style.width = smallsize;
+     img7.style.height = smallsize;
+     img7.style.width = smallsize;
+     img8.style.height = smallsize;
+     img8.style.width = smallsize;
+     logo1.style.width = smallsize;
+     logo1.style.height = smallsize;
+     logo2.style.width = smallsize;
+     logo2.style.height = smallsize;
+
+     logo3.style.width = smallsize;
+     logo3.style.height = smallsize;
+     logo4.style.width = smallsize;
+     logo4.style.height = smallsize;
+     logo5.style.width = smallsize;
+     logo5.style.height = smallsize;
+     logo6.style.width = smallsize;
+     logo6.style.height = smallsize;
+     logo7.style.width = smallsize;
+     logo7.style.height = smallsize;
+     logo8.style.width = smallsize;
+     logo8.style.height = smallsize;
+
+
+
+
+  var pix = 600 / 2 -  parseInt(smallsize)/2;
+  logo1.style.marginLeft= pix+'px';
+  logo2.style.marginLeft= pix+'px';
+
+  logo3.style.marginLeft= pix+'px';
+  logo4.style.marginLeft= pix+'px';
+  logo5.style.marginLeft= pix+'px';
+  logo6.style.marginLeft= pix+'px';
+  logo7.style.marginLeft= pix+'px';
+  logo8.style.marginLeft= pix+'px';
+  img1.style.marginLeft= pix+'px';
+
+
+  img2.style.marginLeft= pix+'px';
+  img3.style.marginLeft= pix+'px';
+  img4.style.marginLeft= pix+'px';
+  img5.style.marginLeft= pix+'px';
+  img6.style.marginLeft= pix+'px';
+  img7.style.marginLeft= pix+'px';
+  img8.style.marginLeft= pix+'px';
+
+  logo2.style.marginTop= pix+'px';
+  logo1.style.marginTop= pix+'px';
+  logo3.style.marginTop= pix+'px';
+  logo4.style.marginTop= pix+'px';
+  logo5.style.marginTop= pix+'px';
+  logo6.style.marginTop= pix+'px';
+  logo7.style.marginTop= pix+'px';
+  logo8.style.marginTop= pix+'px';
+  img1.style.marginTop= pix+'px';
+  img2.style.marginTop= pix+'px';
+  img3.style.marginTop= pix+'px';
+  img4.style.marginTop= pix+'px';
+  img5.style.marginTop= pix+'px';
+  img6.style.marginTop= pix+'px';
+  img7.style.marginTop= pix+'px';
+  img8.style.marginTop= pix+'px';
+
+
+
+  sizePrice=7;
+  updateTotalprice();
+
+
+  }else if(sizey=="l"){
+   img1.style.height = largesize;
+   img1.style.width = largesize;
+   img2.style.height = largesize;
+   img2.style.width = largesize;
+   img3.style.height = largesize;
+   img3.style.width = largesize;
+   img4.style.height = largesize;
+   img4.style.width = largesize;
+   img5.style.height = largesize;
+   img5.style.width = largesize;
+   img6.style.height = largesize;
+   img6.style.width = largesize;
+   img7.style.height = largesize;
+   img7.style.width = largesize;
+   img8.style.height = largesize;
+   img8.style.width = largesize;
+   logo1.style.width = largesize;
+   logo1.style.height = largesize;
+   logo2.style.width = largesize;
+   logo2.style.height = largesize;
+   logo3.style.width = largesize;
+   logo3.style.height = largesize;
+   logo4.style.width = largesize;
+   logo4.style.height = largesize;
+   logo5.style.width = largesize;
+   logo5.style.height = largesize;
+   logo6.style.width = largesize;
+   logo6.style.height = largesize;
+   logo7.style.width = largesize;
+   logo7.style.height = largesize;
+   logo8.style.width = largesize;
+   logo8.style.height = largesize;
+
+   var pix = 600 / 2 -  parseInt(largesize)/2;
+   logo1.style.marginLeft= pix+'px';
+   logo2.style.marginLeft= pix+'px';
+   img1.style.marginLeft= pix+'px';
+   logo3.style.marginLeft= pix+'px';
+   logo4.style.marginLeft= pix+'px';
+   logo5.style.marginLeft= pix+'px';
+   logo6.style.marginLeft= pix+'px';
+   logo7.style.marginLeft= pix+'px';
+   logo8.style.marginLeft= pix+'px';
+
+   img2.style.marginLeft= pix+'px';
+   img3.style.marginLeft= pix+'px';
+   img4.style.marginLeft= pix+'px';
+   img5.style.marginLeft= pix+'px';
+   img6.style.marginLeft= pix+'px';
+   img7.style.marginLeft= pix+'px';
+   img8.style.marginLeft= pix+'px';
+
+   logo2.style.marginTop= pix+'px';
+   logo1.style.marginTop= pix+'px';
+   logo3.style.marginTop= pix+'px';
+   logo4.style.marginTop= pix+'px';
+   logo5.style.marginTop= pix+'px';
+   logo6.style.marginTop= pix+'px';
+   logo7.style.marginTop= pix+'px';
+   logo8.style.marginTop= pix+'px';
+   img1.style.marginTop= pix+'px';
+   img2.style.marginTop= pix+'px';
+   img3.style.marginTop= pix+'px';
+   img4.style.marginTop= pix+'px';
+   img5.style.marginTop= pix+'px';
+   img6.style.marginTop= pix+'px';
+   img7.style.marginTop= pix+'px';
+   img8.style.marginTop= pix+'px';
+   
+   sizePrice=10;
+   updateTotalprice();
+
+  }else if(sizey=="xl"){
+
+    img1.style.height = bigsize;
+    img1.style.width = bigsize;
+    img2.style.height = bigsize;
+    img2.style.width = bigsize;
+    img3.style.height = bigsize;
+    img3.style.width = bigsize;
+    img4.style.height = bigsize;
+    img4.style.width = bigsize;
+    img5.style.height = bigsize;
+    img5.style.width = bigsize;
+    img6.style.height = bigsize;
+    img6.style.width = bigsize;
+    img7.style.height = bigsize;
+    img7.style.width = bigsize;
+    img8.style.height = bigsize;
+    img8.style.width = bigsize;
+    logo1.style.width = bigsize;
+    logo1.style.height = bigsize;
+    logo2.style.width = bigsize;
+    logo2.style.height = bigsize;
+    logo3.style.width = bigsize;
+    logo3.style.height = bigsize;
+    logo4.style.width = bigsize;
+    logo4.style.height = bigsize;
+    logo5.style.width = bigsize;
+    logo5.style.height = bigsize;
+    logo6.style.width = bigsize;
+    logo6.style.height = bigsize;
+    logo7.style.width = bigsize;
+    logo7.style.height = bigsize;
+    logo8.style.width = bigsize;
+    logo8.style.height = bigsize;
+
+    var pix = 600 / 2 -  parseInt(bigsize)/2;
+    logo1.style.marginLeft= pix+'px';
+    logo2.style.marginLeft= pix+'px';
+    img1.style.marginLeft= pix+'px';
+    
+    logo3.style.marginLeft= pix+'px';
+    logo4.style.marginLeft= pix+'px';
+    logo5.style.marginLeft= pix+'px';
+    logo6.style.marginLeft= pix+'px';
+    logo7.style.marginLeft= pix+'px';
+    logo8.style.marginLeft= pix+'px';
+    img2.style.marginLeft= pix+'px';
+    img3.style.marginLeft= pix+'px';
+    img4.style.marginLeft= pix+'px';
+    img5.style.marginLeft= pix+'px';
+    img6.style.marginLeft= pix+'px';
+    img7.style.marginLeft= pix+'px';
+    img8.style.marginLeft= pix+'px';
+
+    logo2.style.marginTop= pix+'px';
+    logo1.style.marginTop= pix+'px';
+    logo3.style.marginTop= pix+'px';
+    logo4.style.marginTop= pix+'px';
+    logo5.style.marginTop= pix+'px';
+    logo6.style.marginTop= pix+'px';
+    logo7.style.marginTop= pix+'px';
+    logo8.style.marginTop= pix+'px';
+    img1.style.marginTop= pix+'px';
+    img2.style.marginTop= pix+'px';
+    img3.style.marginTop= pix+'px';
+    img4.style.marginTop= pix+'px';
+    img5.style.marginTop= pix+'px';
+    img6.style.marginTop= pix+'px';
+    img7.style.marginTop= pix+'px';
+    img8.style.marginTop= pix+'px';
+    sizePrice=15;
+    updateTotalprice();
+    
+  }
+
+  }
+  //function name: HideAll()
+  //Description: this function will hide all the tshirts that are loaded in the page 
+  function hideAll(){
+    document.getElementById('tBlue').style.visibility = 'hidden';
+    document.getElementById('tRed').style.visibility = 'hidden';
+    document.getElementById('tGreen').style.visibility = 'hidden';
+    document.getElementById('tYellow').style.visibility = 'hidden';
+    document.getElementById('tLightB').style.visibility = 'hidden';
+    document.getElementById('tOrange').style.visibility = 'hidden';
+    document.getElementById('tGold').style.visibility = 'hidden';
+    document.getElementById('tMoneyc').style.visibility = 'hidden';
+
+
+
+  }
+  //function name: HideAllLogo()
+  //Description: this function will hide all the logos that are loaded in the page 1 to 8
+  function hideAllLogo(){
+    document.getElementById('logo1').style.visibility = 'hidden';
+    document.getElementById('logo2').style.visibility = 'hidden';
+    document.getElementById('logo3').style.visibility = 'hidden';
+    document.getElementById('logo4').style.visibility = 'hidden';
+    document.getElementById('logo5').style.visibility = 'hidden';
+    document.getElementById('logo6').style.visibility = 'hidden';
+    document.getElementById('logo7').style.visibility = 'hidden';
+    document.getElementById('logo8').style.visibility = 'hidden';
+
+
+
+  }
+
+//Function name :updateTotalPrice()
+//Description: this function is what controlls the price/ what it dose is that it gets the public vars totalPrice/tshirtprice/colourPrice 
+//and updates them, then it will display the updated price in html with innerHTML,it will also check if its a cit email and apply 10% (0.9) to the total price.
+
+  function updateTotalprice(){
+     if(discountPrice>0){
+totalPrice= (tshirtPrice + sizePrice+colourPrice+logoprice) * 0.9;
+
+     }else{
+    totalPrice= tshirtPrice + sizePrice+colourPrice+logoprice;
+    }
+    var pricetext=document.getElementById('price');
+    pricetext.innerHTML="Total:"+'\u20AC'+totalPrice;
+
+
+  }
+  </script>
+
+  </head>
+  <body onLoad="onStart()" >
+
+    <div class="bannerMain"></div>
+
+    <div class="imageContainer">
+      <img class="imageT" id ="tBlue"src="blueT.png">
+      <img class="imageT" id ="tRed"src="redT.png">
+      <img class="imageT" id ="tGreen"src="GreenT.png">
+      <img class="imageT" id ="tOrange"src="OrangeT.png">
+      <img class="imageT" id ="tYellow"src="yellowT.png">
+      <img class="imageT" id ="tLightB"src="lightblueT.png">
+      <img class="imageT" id ="tGold"src="goldT.png">
+      <img class="imageT" id ="tMoneyc"src="moneyT.png">
+
+      <img class="imageT" id ="logo1"src="logo1.png">
+      <img class="imageT" id ="logo2"src="logo2.png">
+      <img class="imageT" id ="logo3"src="logo3.png">
+      <img class="imageT" id ="logo4"src="logo4.png">
+      <img class="imageT" id ="logo5"src="logo5.png">
+      <img class="imageT" id ="logo6"src="logo6.png">
+      <img class="imageT" id ="logo7"src="logo7.png">
+      <img class="imageT" id ="logo8"src="logo8.png">
+
+      
+    </div>
+
+    <div class="userOptions">
+
+<div class ="price" id="price">
+
+      </div>
+      <div class="emailType" id="emailType"></div>
+       
+      <div class="radioB">
+        <p>Colour:</p>
+        <select onchange="showTshirt(value)">
+          <option  name="Colour" value="blue" selected="selected">Blue|| 2&euro;</option>
+          <option  name="Colour" value="red">Red|| 2&euro;</option>
+          <option  name="Colour" value="green">Green|| 2&euro;</option>
+          <option  name="Colour" value="lightb">Light Blue|| 2&euro;</option>
+          <option  name="Colour" value="yellow">Yellow|| 2&euro;</option>
+          <option  name="Colour" value="orange">Orange|| 3&euro;</option>
+          <option  name="Colour" value="gold">Gold|| 23&euro;</option>
+          <option  name="Colour" value="moneyc">Money Pattern|| 23&euro;</option>
+        </select>
+
+
+      </div>
+      
+      
+      
+
+      <div class="radioBsize" >
+        <p>Size:</p>
+        <select onchange="setSize(value)">
+
+          <option  value="s" name="Size" >Small(S)|| 7&euro;</option>
+          <option  value="l" name="Size" selected="selected">Large(L)|| 10&euro;</option>
+          <option value="xl" name="Size" >Xtra Large(XL)|| 15&euro;</option>
+        </select>
+      </div>
+
+
+
+      <div class="radioBlogo">
+        <p>Logo:</p>
+        <select onchange="setlogo(value)">
+
+          
+          <option  value="1" name="Size" selected="selected">Logo1||1&euro;</option>
+          <option value="2" name="Size" >logo2|| 2&euro;</option>
+          <option value="3" name="Size" >logo3|| 3&euro;</option>
+          <option value="4" name="Size" >logo4|| 4&euro;</option>
+          <option value="5" name="Size" >logo5|| 5&euro;</option>
+          <option value="6" name="Size" >logo6|| 6&euro;</option>
+          <option value="7" name="Size" >logo7|| 7&euro;</option>
+          <option value="8" name="Size" >logo8|| 8&euro;</option>
+        </select>
+
+      </div>
+
+      <form action="http://atlantis.cit.ie/displayvalues.php" onsubmit="return checkAll()">
+        First Name: <input type="text" name="FirstName" id="fnamey" required><br>
+        Second Name: <input type="text" name="secondName" id="snamey"required><br>
+        Email Assress: <input type="text" name="Email" id="emailBox" oninput="emailCheck(value);"><br>
+        Credit Card: <input type="text" id="creditC" oninput="creditCalc(value);" name="CreditCard"><br>
+        Pesel Number: <input type="text" id="pesel" name="PeselNum" oninput="calcPesel(value);"><br>
+        PPS Number: <input type="text" id="ppsN" name="PPsNum" oninput="ppsCalc(value);"><br>
+        Bank Note Number: <input type="text" id="bankNo" name="BankNo" oninput="calcEuro(value);"><br>
+        <input type="submit" value="Submit">
+      </form> 
+
+    </div>
+
+  </body>
+  </html>
